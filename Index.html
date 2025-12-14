@@ -8,15 +8,36 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Noto Sans TC', sans-serif; background-color: #f3f4f6; background-image: radial-gradient(#e5e7eb 1px, transparent 1px); background-size: 20px 20px; overscroll-behavior: none; }
-        .card-texture { background-color: #ffffff; box-shadow: inset 0 0 40px rgba(0,0,0,0.02); }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
-        .animate-item { animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-        .btn-press:active { transform: scale(0.96); }
-        .lol-text { color: #005a82; }
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: #f3f4f6;
+            background-image: radial-gradient(#e5e7eb 1px, transparent 1px);
+            background-size: 20px 20px;
+            overscroll-behavior: none;
+        }
+        .card-texture {
+            background-color: #ffffff;
+            box-shadow: inset 0 0 40px rgba(0,0,0,0.02);
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-item {
+            animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        .btn-press:active {
+            transform: scale(0.96);
+        }
+        /* LOL Special Style */
+        .lol-text {
+            color: #005a82; /* Hextech Blue-ish */
+        }
     </style>
 </head>
 <body class="min-h-screen flex flex-col items-center py-4 px-3 text-gray-800 select-none">
+
+    <!-- Header -->
     <header class="w-full max-w-lg flex justify-between items-center mb-4">
         <div>
             <h1 class="text-2xl font-black text-indigo-900 tracking-tighter">
@@ -24,45 +45,287 @@
             </h1>
             <p class="text-xs text-gray-500 font-bold" id="db-counter">載入中...</p>
         </div>
-        <button onclick="toggleSettings()" class="text-gray-500 hover:text-indigo-600 p-2"><i class="fa-solid fa-gear text-xl"></i></button>
+        <button onclick="toggleSettings()" class="text-gray-500 hover:text-indigo-600 p-2">
+            <i class="fa-solid fa-gear text-xl"></i>
+        </button>
     </header>
+
+    <!-- Main Card -->
     <main class="w-full max-w-lg relative perspective-1000 mb-20">
         <div class="card-texture rounded-2xl border-4 border-gray-800 shadow-[0_10px_40px_-10px_rgba(0,0,0,0.2)] overflow-hidden relative">
+            
+            <!-- Card Header -->
             <div class="bg-gray-800 text-white py-2 px-4 flex justify-between items-center relative overflow-hidden">
                 <div class="absolute inset-0 bg-gradient-to-r from-gray-800 via-gray-700 to-gray-800 opacity-50"></div>
                 <span class="font-bold tracking-[0.2em] text-lg relative z-10">題目卡</span>
                 <span class="text-xs text-gray-400 font-mono relative z-10" id="version-id">NO.001</span>
             </div>
+
+            <!-- Questions List -->
             <div id="questions-list" class="p-3 space-y-2 min-h-[400px]">
-                <div class="flex items-center justify-center h-64 text-gray-400"><i class="fa-solid fa-circle-notch fa-spin text-2xl"></i></div>
+                <div class="flex items-center justify-center h-64 text-gray-400">
+                    <i class="fa-solid fa-circle-notch fa-spin text-2xl"></i>
+                </div>
             </div>
+
+            <!-- Card Footer -->
             <div class="bg-gray-50 border-t border-gray-100 p-2 flex justify-center space-x-4 text-gray-300 text-xs">
-                <span>● 簡單</span><span>● 中等</span><span>● 困難</span><span>● 地獄</span>
+                <span>● 簡單</span>
+                <span>● 中等</span>
+                <span>● 困難</span>
+                <span>● 地獄</span>
             </div>
         </div>
     </main>
+
+    <!-- Floating Action Button -->
     <div class="fixed bottom-6 left-0 right-0 flex justify-center z-50 px-4">
         <button onclick="generate()" class="btn-press w-full max-w-lg bg-indigo-600 hover:bg-indigo-700 text-white font-black text-xl py-4 rounded-2xl shadow-xl shadow-indigo-200 border-b-4 border-indigo-800 flex items-center justify-center gap-2 transition-all">
             <i class="fa-solid fa-shuffle"></i> 抽取題目
         </button>
     </div>
+
+    <!-- Settings Modal -->
     <div id="settings-modal" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
         <div class="bg-white rounded-2xl w-full max-w-md max-h-[80vh] overflow-y-auto shadow-2xl">
             <div class="p-5">
-                <h2 class="text-xl font-bold mb-4 flex items-center gap-2"><i class="fa-solid fa-sliders"></i> 設定題庫</h2>
+                <h2 class="text-xl font-bold mb-4 flex items-center gap-2">
+                    <i class="fa-solid fa-sliders"></i> 設定題庫
+                </h2>
+                
                 <div class="space-y-6">
-                    <div><label class="block text-sm font-bold text-gray-700 mb-2">啟用分類</label><div class="grid grid-cols-2 gap-2" id="category-toggles"></div></div>
-                    <div class="bg-indigo-50 p-3 rounded-lg border border-indigo-100"><div class="flex items-center justify-between mb-2"><label class="font-bold text-indigo-900">🔥 瘋狂修飾模式</label><input type="checkbox" id="modifier-toggle" checked class="w-5 h-5 accent-indigo-600"></div><p class="text-xs text-indigo-600">隨機加入形容詞 (例: "閃現撞牆的" + "李星")</p></div>
-                    <div><label class="block text-sm font-bold text-gray-700 mb-2">增加自定義題目</label><textarea id="custom-input" class="w-full p-2 border border-gray-300 rounded-lg text-sm h-24" placeholder="輸入..."></textarea></div>
+                    <!-- Modes -->
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-2">啟用分類</label>
+                        <div class="grid grid-cols-2 gap-2" id="category-toggles">
+                            <!-- Injected by JS -->
+                        </div>
+                    </div>
+
+                    <!-- Modifiers -->
+                    <div class="bg-indigo-50 p-3 rounded-lg border border-indigo-100">
+                        <div class="flex items-center justify-between mb-2">
+                            <label class="font-bold text-indigo-900">🔥 瘋狂修飾模式</label>
+                            <input type="checkbox" id="modifier-toggle" checked class="w-5 h-5 accent-indigo-600">
+                        </div>
+                        <p class="text-xs text-indigo-600">隨機加入形容詞 (例: "閃現撞牆的" + "李星")</p>
+                    </div>
+
+                    <!-- Custom Input -->
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-2">增加自定義題目 (逗號分隔)</label>
+                        <textarea id="custom-input" class="w-full p-2 border border-gray-300 rounded-lg text-sm h-24" placeholder="輸入..."></textarea>
+                    </div>
                 </div>
-                <div class="mt-6 flex gap-2"><button onclick="saveCustom()" class="flex-1 bg-gray-800 text-white py-3 rounded-xl font-bold">保存並關閉</button></div>
+
+                <div class="mt-6 flex gap-2">
+                    <button onclick="saveCustom()" class="flex-1 bg-gray-800 text-white py-3 rounded-xl font-bold">保存並關閉</button>
+                </div>
             </div>
         </div>
     </div>
+
     <script>
-        const RAW_DATA=["2|Game|提摩,犽宿,李星,蓋倫,阿璃,吉茵珂絲,艾希,拉克絲,易大師,機器人(布里茨),石頭人(墨菲特),貓咪(悠咪),提摩的香菇,閃現,傳送,重擊,點燃,巴龍,小龍,河蟹,紅Buff,藍Buff,溫泉,主堡,防禦塔,水晶兵營,三項之力,無盡之刃,金人(中婭),殞落王者之劍,暴風大劍,死亡之帽,五連殺(Penta),首殺,塔殺,分推,吃兵,走位,插眼,排眼,蹲草,Gank,反野,送頭,戳,掛網,中離,銅牌,20投,ARAM,峽谷先鋒,凱莎,劫,汎,瑟雷西,提摩隊長,草叢蓋倫,閃現撞牆,空大,殘血,滿裝,T1 Faker","2|Trend|山道猴子,吉伊卡哇,I人/E人,破防,已購買小孩愛吃,科目三,恐龍家長,行人地獄,AI生成圖,Threads(脆),大巨蛋,超派鐵拳,觸爛,暈爛,流量密碼,社會性死亡,情緒勒索,躺平,社畜,吃瓜群眾,炎上,黃仁勳,瑪卡巴卡,呀咧呀咧,尊嘟假嘟,很躁,蛋雕,估咩,北車,AA制,emo,哥布林,帝王條款,醋飯,翻車,鬆弛感,顯眼包,網軍,側翼,載具歸戶,國家級警報,停電,地震,你累了嗎,歸剛欸,芭比Q,降肉,九天玄女,阿嬤饋咖,誓言版求佛,恐龍扛狼,挖呀挖,晚安大小姐,糖葫蘆舞,阿姨我不想努力了,是在哈囉,像極了愛情,甘安捏,咩噗,時間管理大師,人與人的連結,校正回歸,微解封,防疫旅館,快篩陽,高端,缺蛋,房貸補貼,新青安,囤房稅,碳權,缺工,外送師,猴子一生,莫忘初衷,全額貸,精緻窮,安靜離職,原子少年,黑白大廚,魷魚遊戲","1|Food|珍珠奶茶,雞排,臭豆腐,滷肉飯,牛肉麵,小籠包,鳳梨酥,芒果冰,豬血糕,大腸包小腸,蚵仔麵線,蚵仔煎,肉圓,碗粿,潤餅,刈包,豆花,燒仙草,剉冰,地瓜球,糖葫蘆,雞蛋糕,車輪餅,蔥抓餅,鹹酥雞,甜不辣,滷味,燒烤,火鍋,薑母鴨,羊肉爐,砂鍋魚頭,鐵板燒,自助餐,便當,御飯糰,涼麵,壽司,拉麵,咖哩飯,漢堡,薯條,披薩,炸雞,義大利麵,牛排,生魚片,龍蝦,螃蟹,蛤蜊,蝦子,魷魚,章魚,鮭魚,鮪魚,虱目魚,吳郭魚,石斑魚,鱸魚,鱈魚,鯛魚,烏魚子,魚丸,貢丸,花枝丸,燕餃,蛋餃,水餃,鍋貼,燒賣,饅頭,包子,銀絲卷,油條,豆漿,米漿,蘋果西打,麥香紅茶,維大力,彈珠汽水,便所主題餐廳,鼎泰豐,春水堂,夜市牛排,營養午餐,鐵路便當","1|Object|牙刷,牙膏,毛巾,浴巾,洗髮精,沐浴乳,洗面乳,肥皂,吹風機,梳子,鏡子,馬桶,浴缸,臉盆,水龍頭,蓮蓬頭,衛生紙,濕紙巾,衛生棉,尿布,奶瓶,奶嘴,嬰兒車,玩具,鉛筆,原子筆,橡皮擦,尺,剪刀,美工刀,膠水,膠帶,釘書機,迴紋針,筆記本,課本,考卷,成績單,畢業證書,學生證,身分證,健保卡,駕照,護照,信用卡,悠遊卡,錢包,鑰匙,手機,電腦,平板,耳機,充電器,行動電源,滑鼠,鍵盤,螢幕,印表機,電視,冰箱,冷氣,電風扇,洗衣機,烘衣機,吸塵器,掃地機器人,微波爐,烤箱,電鍋,果汁機,咖啡機,熱水瓶,保溫杯,雨傘,雨衣,安全帽,口罩,酒精,溫度計,OK蹦,指甲剪,棉花棒,牙線,衣架,曬衣夾,垃圾桶,垃圾袋,掃把,拖,抹布,水桶,沙發,床,枕頭,棉被,床單,窗簾,地毯,桌子,椅子,櫃子,檯燈,時鐘,手錶,眼鏡,隱形眼鏡,墨鏡,戒指,項鍊,耳環,手鍊,皮帶,領帶,圍巾,手套,襪子,鞋子,拖鞋,藍白拖","2|Place|台北101,故宮,中正紀念堂,國父紀念館,西門町,士林夜市,陽明山,淡水老街,九份,野柳女王頭,日月潭,阿里山,玉山,太魯閣,墾丁,鵝鑾鼻燈塔,澎湖跨海大橋,蘭嶼,綠島,小琉球,龜山島,金門菜刀,馬祖藍眼淚,總統府,立法院,台積電,竹科,全聯,7-11,全家,麥當勞,肯德基,星巴克,好市多,家樂福,IKEA,捷運,高鐵,台鐵,火車站,公車站,機場,港口,加油站,停車場,警察局,消防局,醫院,診所,藥局,郵局,銀行,學校,補習班,安親班,圖書館,電影院,KTV,健身房,游泳池,遊樂園,動物園,博物館,美術館,廟宇,教堂","2|Char|皮卡丘,哆啦A夢,Hello Kitty,史努比,米老鼠,唐老鴨,維尼,蜘蛛人,鋼鐵人,美國隊長,雷神索爾,浩克,黑寡婦,蝙蝠俠,超人,神力女超人,小丑,哈利波特,魯夫,索隆,鳴人,佐助,悟空,貝吉塔,炭治郎,禰豆子,五條悟,安妮亞,約兒,黃昏,柯南,基德,蠟筆小新,櫻桃小丸子,兩津勘吉,海綿寶寶,派大星,章魚哥,小小兵,瑪利歐,路易吉,庫巴,碧姬公主,薩爾達,林克,卡比,音速小子,哥吉拉,金剛,變形金剛,阿凡達,艾莎(Elsa),白雪公主,灰姑娘,美人魚,花木蘭,阿拉丁,神燈精靈,龍貓,無臉男,湯婆婆,波妞,霍爾,魯邦三世,初音未來,Vtuber,阿滴,蔡阿嘎,館長,統神,Toyz,周杰倫,蔡依林,張惠妹,五月天,伍佰","2|Nature|狗,貓,兔子,倉鼠,天竺鼠,黃金鼠,刺蝟,烏龜,金魚,鸚鵡,鴿子,麻雀,老鷹,貓頭鷹,企鵝,鴕鳥,孔雀,雞,鴨,鵝,豬,牛,羊,馬,驢子,駱駝,草泥馬,長頸鹿,大象,犀牛,河馬,獅子,老虎,豹,熊,貓熊,無尾熊,袋鼠,猩猩,猴子,狐狸,狼,浣熊,水獺,海豚,鯨魚,鯊魚,海豹,海獅,海象,海龜,水母,章魚,魷魚,螃蟹,蝦子,龍蝦,海馬,海星,珊瑚,蝴蝶,蜜蜂,螞蟻,蟑螂,蚊子,蒼蠅,蜘蛛,蜈蚣,蠍子,獨角獸,龍,鳳凰,美人魚,外星人,鬼魂,殭屍,吸血鬼,狼人,木乃伊,科學怪人,哥布林,史萊姆,食人花,太陽,月亮,星星,雲,雨,彩虹,閃電,颱風,龍捲風,火山,地震,海嘯,森林,沙漠,海洋,河流,瀑布,山,島嶼,花,草,樹,仙人掌,玫瑰,向日葵,荷花,櫻花,梅花,蘭花,竹子","2|Job|老師,學生,醫生,護士,警察,消防員,軍人,郵差,外送員,司機,廚師,服務生,清潔工,店員,老闆,總經理,秘書,會計,律師,法官,工程師,設計師,作家,畫家,歌手,演員,導演,攝影師,記者,主播,網紅,Youtuber,直播主,運動員,教練,裁判,科學家,太空人,機師,空姐,農夫,漁夫,木匠,水電工,理髮師,化妝師,模特兒,魔術師,小丑,算命師,和尚,道士,牧師,修女,小偷,強盜,殺手,間諜,偵探,總統,市長,里長,立委,議員","3|Hard|愛,恨,快樂,悲傷,生氣,害怕,驚訝,害羞,尷尬,忌妒,羨慕,驕傲,謙虛,誠實,說謊,夢想,希望,絕望,勇氣,自由,和平,戰爭,勝利,失敗,成功,努力,偷懶,睡覺,起床,刷牙,洗臉,洗澡,上廁所,吃飯,喝水,走路,跑步,跳舞,唱歌,畫畫,寫字,看書,玩遊戲,看電視,聽音樂,買東西,賣東西,結婚,離婚,懷孕,生小孩,吵架,打架,和好,約會,告白,分手,暗戀,失戀,加班,開會,出差,請假,遲到,早退,罷工,失業,退休,投票,抗議,遊行,犯罪,坐牢,越獄,逃亡,自殺,殺人,放火,搶劫,偷東西,騙人,背叛,報復,原諒,感謝,道歉,祝福,許願,發誓,詛咒,量子力學,相對論,黑洞,時光機,平行時空,曼德拉效應,既視感,通膨,股市崩盤,經濟大蕭條,世界末日","4|Hell|地獄梗,社會性死亡,情勒,媽寶,渣男,綠茶婊,普信男,普信女,直男癌,女權自助餐,噁男,變態,色狼,痴漢,跟蹤狂,暴露狂,偷窺狂,私生飯,鍵盤俠,正義魔人,酸民,黑粉,恐怖情人,工具人,備胎,當兵,教召,兵變,戴綠帽,劈腿,外遇,小三,老王,私生子,驗DNA,親子鑑定,遺產爭奪,婆媳問題,扶弟魔,啃老族,尼特族,家暴,霸凌,排擠,孤立,邊緣人,社死,黑歷史,前男友,前女友,前夫,前妻,前任,現任,未婚夫,未婚妻,老公,老婆,男朋友,女朋友,炮友,一夜情,網戀,暈船,下船,上岸,海王,海后,中央空調,暖男,渣女"];const ADJECTIVES=["巨大的","迷你的","隱形的","著火的","結冰的","融化的","飛行的","游泳的","跳舞的","唱歌的","生氣的","哭泣的","大笑的","睡覺的","喝醉的","瘋狂的","愚蠢的","聰明的","富有的","貧窮的","懷孕的","死掉的","復活的","變異的","彩色的","透明的","發光的","爆炸的","大便的","洗澡的","穿著比基尼的","穿著西裝的","拿著槍的","騎著豬的","吃雞排的","性感的","醜陋的","可愛的","可怕的","來自未來的","古代的","外星的","機械的","魔法的","中毒的","健康的","生病的","胖胖的","瘦瘦的","殘血的","閃現的","送頭的","掛網的","銅牌的"];let appState={db:[],categories:{Game:{name:"🎮 遊戲/LOL",active:!0},Trend:{name:"🔥 2025 流行",active:!0},Food:{name:"🍔 台灣美食",active:!0},Object:{name:"📱 生活用品",active:!0},Place:{name:"🇹🇼 地點地標",active:!0},Char:{name:"🦸 動漫角色",active:!0},Nature:{name:"🦁 自然動物",active:!0},Job:{name:"👮 職業人物",active:!0},Hard:{name:"🧠 抽象/動作",active:!0},Hell:{name:"😈 地獄/成人",active:!1}},useModifiers:!0,customWords:[]};function init(){RAW_DATA.forEach(t=>{const[e,a,n]=t.split("|"),o=n.split(",");o.forEach(t=>{appState.db.push({word:t,cat:a,lvl:parseInt(e)})})}),updateDBCounter(),renderSettings(),generate()}function updateDBCounter(){const t=appState.db.length+appState.customWords.length,e=appState.useModifiers?"∞":t;document.getElementById("db-counter").innerText=`收錄詞彙: ${t} | 組合變化: ${e}`}function generate(){const t=document.getElementById("questions-list"),e=document.getElementById("version-id");appState.useModifiers=document.getElementById("modifier-toggle").checked,updateDBCounter();let a=Object.keys(appState.categories).filter(t=>appState.categories[t].active),n=appState.db.filter(t=>a.includes(t.cat));if(appState.customWords.length>0&&appState.customWords.forEach(t=>n.push({word:t,cat:"Custom",lvl:2})),n.length<6){alert("請至少選擇一個題庫分類！");return}let o=[],s=[...n];for(let t=0;t<6;t++){0===s.length&&(s=[...n]);const e=Math.floor(Math.random()*s.length);let a=s[e],i=a.word,l=!1;appState.useModifiers&&Math.random()<.3&&(i=`<span class="text-indigo-600 text-sm block mb-1">${ADJECTIVES[Math.floor(Math.random()*ADJECTIVES.length)]}</span>${a.word}`,l=!0,a.lvl=Math.min(a.lvl+1,4)),o.push({...a,display:i,modified:l}),s.splice(e,1)}t.innerHTML="",o.forEach((e,a)=>{const n=document.createElement("div");n.className="animate-item flex items-center gap-3 p-2 rounded-lg bg-gray-50 border border-gray-100 shadow-sm",n.style.animationDelay=`${.1*a}s`;let o="bg-gray-400";1===e.lvl&&(o="bg-green-500"),2===e.lvl&&(o="bg-yellow-400"),3===e.lvl&&(o="bg-blue-500"),4===e.lvl&&(o="bg-purple-600");const s="Game"===e.cat,i=s?"text-blue-600 font-black":"text-gray-400",l=s?"🎮":"";n.innerHTML=`<div class="flex-none w-10 h-10 rounded-lg bg-gray-800 text-white font-black text-xl flex items-center justify-center shadow-md">${a+1}</div><div class="flex-grow min-w-0"><div class="text-lg font-bold text-gray-800 leading-tight break-words">${e.display}</div></div><div class="flex-none flex flex-col items-end gap-1"><div class="flex gap-1">${Array(e.lvl).fill(0).map(()=>`<div class="w-1.5 h-1.5 rounded-full ${o}"></div>`).join("")}</div><span class="text-[10px] ${i} font-bold uppercase tracking-wider">${l} ${e.cat}</span></div>`,t.appendChild(n)}),e.innerText="NO."+Math.floor(9999*Math.random()).toString().padStart(4,"0")}function toggleSettings(){document.getElementById("settings-modal").classList.toggle("hidden")}function renderSettings(){const t=document.getElementById("category-toggles");t.innerHTML="",Object.keys(appState.categories).forEach(e=>{const a=appState.categories[e],n=document.createElement("button");n.className=`p-2 rounded-lg text-sm font-bold border-2 transition-all ${a.active?"bg-indigo-100 border-indigo-500 text-indigo-700":"bg-white border-gray-200 text-gray-400"}`,n.innerText=a.name,n.onclick=()=>{a.active=!a.active,renderSettings()},t.appendChild(n)})}function saveCustom(){const t=document.getElementById("custom-input").value;if(t.trim()){const e=t.split(/[,，\n]/).map(t=>t.trim()).filter(t=>t);appState.customWords=e}toggleSettings(),generate()}window.onload=init;
+        // --- DATA WAREHOUSE ---
+        // Format: "Level|Category|Word1,Word2..."
+        
+        const RAW_DATA = [
+            // --- 🎮 LOL / Gaming (Taiwan Server Specific) ---
+            "2|Game|提摩,犽宿,李星,蓋倫,阿璃,吉茵珂絲,艾希,拉克絲,易大師,機器人(布里茨),石頭人(墨菲特),貓咪(悠咪),提摩的香菇,閃現,傳送,重擊,點燃,巴龍,小龍,河蟹,紅Buff,藍Buff,溫泉,主堡,防禦塔,水晶兵營,三項之力,無盡之刃,金人(中婭),殞落王者之劍,暴風大劍,死亡之帽,五連殺(Penta),首殺,塔殺,分推,吃兵,走位,插眼,排眼,蹲草,Gank,反野,送頭,戳,掛網,中離,銅牌,20投,ARAM,峽谷先鋒,凱莎,劫,汎,瑟雷西,提摩隊長,草叢蓋倫,閃現撞牆,空大,殘血,滿裝,T1 Faker",
+
+            // --- 2025 Trend ---
+            "2|Trend|山道猴子,吉伊卡哇,I人/E人,破防,已購買小孩愛吃,科目三,恐龍家長,行人地獄,AI生成圖,Threads(脆),大巨蛋,超派鐵拳,觸爛,暈爛,流量密碼,社會性死亡,情緒勒索,躺平,社畜,吃瓜群眾,炎上,黃仁勳,瑪卡巴卡,呀咧呀咧,尊嘟假嘟,很躁,蛋雕,估咩,北車,AA制,emo,哥布林,帝王條款,醋飯,翻車,鬆弛感,顯眼包,網軍,側翼,載具歸戶,國家級警報,停電,地震,你累了嗎,歸剛欸,芭比Q,降肉,九天玄女,阿嬤饋咖,誓言版求佛,恐龍扛狼,挖呀挖,晚安大小姐,糖葫蘆舞,阿姨我不想努力了,是在哈囉,像極了愛情,甘安捏,咩噗,時間管理大師,人與人的連結,校正回歸,微解封,防疫旅館,快篩陽,高端,缺蛋,房貸補貼,新青安,囤房稅,碳權,缺工,外送師,猴子一生,莫忘初衷,全額貸,精緻窮,安靜離職,原子少年,黑白大廚,魷魚遊戲",
+            
+            // --- Food ---
+            "1|Food|珍珠奶茶,雞排,臭豆腐,滷肉飯,牛肉麵,小籠包,鳳梨酥,芒果冰,豬血糕,大腸包小腸,蚵仔麵線,蚵仔煎,肉圓,碗粿,潤餅,刈包,豆花,燒仙草,剉冰,地瓜球,糖葫蘆,雞蛋糕,車輪餅,蔥抓餅,鹹酥雞,甜不辣,滷味,燒烤,火鍋,薑母鴨,羊肉爐,砂鍋魚頭,鐵板燒,自助餐,便當,御飯糰,涼麵,壽司,拉麵,咖哩飯,漢堡,薯條,披薩,炸雞,義大利麵,牛排,生魚片,龍蝦,螃蟹,蛤蜊,蝦子,魷魚,章魚,鮭魚,鮪魚,虱目魚,吳郭魚,石斑魚,鱸魚,鱈魚,鯛魚,烏魚子,魚丸,貢丸,花枝丸,燕餃,蛋餃,水餃,鍋貼,燒賣,饅頭,包子,銀絲卷,油條,豆漿,米漿,蘋果西打,麥香紅茶,維大力,彈珠汽水,便所主題餐廳,鼎泰豐,春水堂,夜市牛排,營養午餐,鐵路便當",
+
+            // --- Object ---
+            "1|Object|牙刷,牙膏,毛巾,浴巾,洗髮精,沐浴乳,洗面乳,肥皂,吹風機,梳子,鏡子,馬桶,浴缸,臉盆,水龍頭,蓮蓬頭,衛生紙,濕紙巾,衛生棉,尿布,奶瓶,奶嘴,嬰兒車,玩具,鉛筆,原子筆,橡皮擦,尺,剪刀,美工刀,膠水,膠帶,釘書機,迴紋針,筆記本,課本,考卷,成績單,畢業證書,學生證,身分證,健保卡,駕照,護照,信用卡,悠遊卡,錢包,鑰匙,手機,電腦,平板,耳機,充電器,行動電源,滑鼠,鍵盤,螢幕,印表機,電視,冰箱,冷氣,電風扇,洗衣機,烘衣機,吸塵器,掃地機器人,微波爐,烤箱,電鍋,果汁機,咖啡機,熱水瓶,保溫杯,雨傘,雨衣,安全帽,口罩,酒精,溫度計,OK蹦,指甲剪,棉花棒,牙線,衣架,曬衣夾,垃圾桶,垃圾袋,掃把,拖,抹布,水桶,沙發,床,枕頭,棉被,床單,窗簾,地毯,桌子,椅子,櫃子,檯燈,時鐘,手錶,眼鏡,隱形眼鏡,墨鏡,戒指,項鍊,耳環,手鍊,皮帶,領帶,圍巾,手套,襪子,鞋子,拖鞋,藍白拖",
+
+            // --- Place ---
+            "2|Place|台北101,故宮,中正紀念堂,國父紀念館,西門町,士林夜市,陽明山,淡水老街,九份,野柳女王頭,日月潭,阿里山,玉山,太魯閣,墾丁,鵝鑾鼻燈塔,澎湖跨海大橋,蘭嶼,綠島,小琉球,龜山島,金門菜刀,馬祖藍眼淚,總統府,立法院,台積電,竹科,全聯,7-11,全家,麥當勞,肯德基,星巴克,好市多,家樂福,IKEA,捷運,高鐵,台鐵,火車站,公車站,機場,港口,加油站,停車場,警察局,消防局,醫院,診所,藥局,郵局,銀行,學校,補習班,安親班,圖書館,電影院,KTV,健身房,游泳池,遊樂園,動物園,博物館,美術館,廟宇,教堂",
+
+            // --- Char ---
+            "2|Char|皮卡丘,哆啦A夢,Hello Kitty,史努比,米老鼠,唐老鴨,維尼,蜘蛛人,鋼鐵人,美國隊長,雷神索爾,浩克,黑寡婦,蝙蝠俠,超人,神力女超人,小丑,哈利波特,魯夫,索隆,鳴人,佐助,悟空,貝吉塔,炭治郎,禰豆子,五條悟,安妮亞,約兒,黃昏,柯南,基德,蠟筆小新,櫻桃小丸子,兩津勘吉,海綿寶寶,派大星,章魚哥,小小兵,瑪利歐,路易吉,庫巴,碧姬公主,薩爾達,林克,卡比,音速小子,哥吉拉,金剛,變形金剛,阿凡達,艾莎(Elsa),白雪公主,灰姑娘,美人魚,花木蘭,阿拉丁,神燈精靈,龍貓,無臉男,湯婆婆,波妞,霍爾,魯邦三世,初音未來,Vtuber,阿滴,蔡阿嘎,館長,統神,Toyz,周杰倫,蔡依林,張惠妹,五月天,伍佰",
+
+            // --- Nature ---
+            "2|Nature|狗,貓,兔子,倉鼠,天竺鼠,黃金鼠,刺蝟,烏龜,金魚,鸚鵡,鴿子,麻雀,老鷹,貓頭鷹,企鵝,鴕鳥,孔雀,雞,鴨,鵝,豬,牛,羊,馬,驢子,駱駝,草泥馬,長頸鹿,大象,犀牛,河馬,獅子,老虎,豹,熊,貓熊,無尾熊,袋鼠,猩猩,猴子,狐狸,狼,浣熊,水獺,海豚,鯨魚,鯊魚,海豹,海獅,海象,海龜,水母,章魚,魷魚,螃蟹,蝦子,龍蝦,海馬,海星,珊瑚,蝴蝶,蜜蜂,螞蟻,蟑螂,蚊子,蒼蠅,蜘蛛,蜈蚣,蠍子,獨角獸,龍,鳳凰,美人魚,外星人,鬼魂,殭屍,吸血鬼,狼人,木乃伊,科學怪人,哥布林,史萊姆,食人花,太陽,月亮,星星,雲,雨,彩虹,閃電,颱風,龍捲風,火山,地震,海嘯,森林,沙漠,海洋,河流,瀑布,山,島嶼,花,草,樹,仙人掌,玫瑰,向日葵,荷花,櫻花,梅花,蘭花,竹子",
+
+            // --- Job ---
+            "2|Job|老師,學生,醫生,護士,警察,消防員,軍人,郵差,外送員,司機,廚師,服務生,清潔工,店員,老闆,總經理,秘書,會計,律師,法官,工程師,設計師,作家,畫家,歌手,演員,導演,攝影師,記者,主播,網紅,Youtuber,直播主,運動員,教練,裁判,科學家,太空人,機師,空姐,農夫,漁夫,木匠,水電工,理髮師,化妝師,模特兒,魔術師,小丑,算命師,和尚,道士,牧師,修女,小偷,強盜,殺手,間諜,偵探,總統,市長,里長,立委,議員",
+
+            // --- Hard ---
+            "3|Hard|愛,恨,快樂,悲傷,生氣,害怕,驚訝,害羞,尷尬,忌妒,羨慕,驕傲,謙虛,誠實,說謊,夢想,希望,絕望,勇氣,自由,和平,戰爭,勝利,失敗,成功,努力,偷懶,睡覺,起床,刷牙,洗臉,洗澡,上廁所,吃飯,喝水,走路,跑步,跳舞,唱歌,畫畫,寫字,看書,玩遊戲,看電視,聽音樂,買東西,賣東西,結婚,離婚,懷孕,生小孩,吵架,打架,和好,約會,告白,分手,暗戀,失戀,加班,開會,出差,請假,遲到,早退,罷工,失業,退休,投票,抗議,遊行,犯罪,坐牢,越獄,逃亡,自殺,殺人,放火,搶劫,偷東西,騙人,背叛,報復,原諒,感謝,道歉,祝福,許願,發誓,詛咒,量子力學,相對論,黑洞,時光機,平行時空,曼德拉效應,既視感,通膨,股市崩盤,經濟大蕭條,世界末日",
+            
+            // --- Hell ---
+            "4|Hell|地獄梗,社會性死亡,情勒,媽寶,渣男,綠茶婊,普信男,普信女,直男癌,女權自助餐,噁男,變態,色狼,痴漢,跟蹤狂,暴露狂,偷窺狂,私生飯,鍵盤俠,正義魔人,酸民,黑粉,恐怖情人,工具人,備胎,當兵,教召,兵變,戴綠帽,劈腿,外遇,小三,老王,私生子,驗DNA,親子鑑定,遺產爭奪,婆媳問題,扶弟魔,啃老族,尼特族,家暴,霸凌,排擠,孤立,邊緣人,社死,黑歷史,前男友,前女友,前夫,前妻,前任,現任,未婚夫,未婚妻,老公,老婆,男朋友,女朋友,炮友,一夜情,網戀,暈船,下船,上岸,海王,海后,中央空調,暖男,渣女"
+        ];
+
+        const ADJECTIVES = [
+            "巨大的", "迷你的", "隱形的", "著火的", "結冰的", "融化的", "飛行的", "游泳的", "跳舞的", "唱歌的", 
+            "生氣的", "哭泣的", "大笑的", "睡覺的", "喝醉的", "瘋狂的", "愚蠢的", "聰明的", "富有的", "貧窮的",
+            "懷孕的", "死掉的", "復活的", "變異的", "彩色的", "透明的", "發光的", "爆炸的", "大便的", "洗澡的",
+            "穿著比基尼的", "穿著西裝的", "拿著槍的", "騎著豬的", "吃雞排的", "性感的", "醜陋的", "可愛的", "可怕的",
+            "來自未來的", "古代的", "外星的", "機械的", "魔法的", "中毒的", "健康的", "生病的", "胖胖的", "瘦瘦的",
+            "殘血的", "閃現的", "送頭的", "掛網的", "銅牌的" // LOL specific adjectives
+        ];
+
+        // --- STATE MANAGEMENT ---
+        let appState = {
+            db: [],
+            categories: {
+                Game: { name: "🎮 遊戲/LOL", active: true },
+                Trend: { name: "🔥 2025 流行", active: true },
+                Food: { name: "🍔 台灣美食", active: true },
+                Object: { name: "📱 生活用品", active: true },
+                Place: { name: "🇹🇼 地點地標", active: true },
+                Char: { name: "🦸 動漫角色", active: true },
+                Nature: { name: "🦁 自然動物", active: true },
+                Job: { name: "👮 職業人物", active: true },
+                Hard: { name: "🧠 抽象/動作", active: true },
+                Hell: { name: "😈 地獄/成人", active: false }
+            },
+            useModifiers: true,
+            customWords: []
+        };
+
+        function init() {
+            RAW_DATA.forEach(line => {
+                const [lvl, cat, wordsStr] = line.split('|');
+                const words = wordsStr.split(',');
+                words.forEach(w => {
+                    appState.db.push({ word: w, cat: cat, lvl: parseInt(lvl) });
+                });
+            });
+            updateDBCounter();
+            renderSettings();
+            generate();
+        }
+
+        function updateDBCounter() {
+            const count = appState.db.length + appState.customWords.length;
+            const combo = appState.useModifiers ? "∞" : count;
+            document.getElementById('db-counter').innerText = `收錄詞彙: ${count} | 組合變化: ${combo}`;
+        }
+
+        function generate() {
+            const listEl = document.getElementById('questions-list');
+            const versionEl = document.getElementById('version-id');
+            const modToggle = document.getElementById('modifier-toggle');
+            appState.useModifiers = modToggle.checked;
+            updateDBCounter();
+
+            let activeCats = Object.keys(appState.categories).filter(k => appState.categories[k].active);
+            let pool = appState.db.filter(item => activeCats.includes(item.cat));
+            
+            if (appState.customWords.length > 0) {
+                appState.customWords.forEach(w => pool.push({ word: w, cat: 'Custom', lvl: 2 }));
+            }
+
+            if (pool.length < 6) {
+                alert("請至少選擇一個題庫分類！");
+                return;
+            }
+
+            let selected = [];
+            let tempPool = [...pool];
+            for (let i = 0; i < 6; i++) {
+                if (tempPool.length === 0) tempPool = [...pool];
+                const idx = Math.floor(Math.random() * tempPool.length);
+                let item = tempPool[idx];
+                
+                let displayWord = item.word;
+                let isModified = false;
+                
+                // Modifier logic: 30% chance usually, but if it's LOL category, maybe higher chance for fun
+                if (appState.useModifiers && Math.random() < 0.3) {
+                    const adj = ADJECTIVES[Math.floor(Math.random() * ADJECTIVES.length)];
+                    displayWord = `<span class="text-indigo-600 text-sm block mb-1">${adj}</span>${item.word}`;
+                    isModified = true;
+                    item.lvl = Math.min(item.lvl + 1, 4);
+                }
+
+                selected.push({ ...item, display: displayWord, modified: isModified });
+                tempPool.splice(idx, 1);
+            }
+
+            listEl.innerHTML = '';
+            selected.forEach((item, index) => {
+                const row = document.createElement('div');
+                row.className = 'animate-item flex items-center gap-3 p-2 rounded-lg bg-gray-50 border border-gray-100 shadow-sm';
+                row.style.animationDelay = `${index * 0.1}s`;
+
+                let diffColor = 'bg-gray-400';
+                if(item.lvl === 1) diffColor = 'bg-green-500';
+                if(item.lvl === 2) diffColor = 'bg-yellow-400';
+                if(item.lvl === 3) diffColor = 'bg-blue-500';
+                if(item.lvl === 4) diffColor = 'bg-purple-600';
+
+                // Highlight Game/LOL items
+                const isGame = item.cat === 'Game';
+                const catColor = isGame ? 'text-blue-600 font-black' : 'text-gray-400';
+                const catIcon = isGame ? '🎮' : '';
+
+                row.innerHTML = `
+                    <div class="flex-none w-10 h-10 rounded-lg bg-gray-800 text-white font-black text-xl flex items-center justify-center shadow-md">
+                        ${index + 1}
+                    </div>
+                    <div class="flex-grow min-w-0">
+                        <div class="text-lg font-bold text-gray-800 leading-tight break-words">
+                            ${item.display}
+                        </div>
+                    </div>
+                    <div class="flex-none flex flex-col items-end gap-1">
+                        <div class="flex gap-1">
+                            ${Array(item.lvl).fill(0).map(() => `<div class="w-1.5 h-1.5 rounded-full ${diffColor}"></div>`).join('')}
+                        </div>
+                        <span class="text-[10px] ${catColor} font-bold uppercase tracking-wider">${catIcon} ${item.cat}</span>
+                    </div>
+                `;
+                listEl.appendChild(row);
+            });
+
+            versionEl.innerText = 'NO.' + Math.floor(Math.random() * 9999).toString().padStart(4, '0');
+        }
+
+        function toggleSettings() {
+            const modal = document.getElementById('settings-modal');
+            modal.classList.toggle('hidden');
+        }
+
+        function renderSettings() {
+            const container = document.getElementById('category-toggles');
+            container.innerHTML = '';
+            
+            Object.keys(appState.categories).forEach(key => {
+                const cat = appState.categories[key];
+                const btn = document.createElement('button');
+                btn.className = `p-2 rounded-lg text-sm font-bold border-2 transition-all ${
+                    cat.active 
+                    ? 'bg-indigo-100 border-indigo-500 text-indigo-700' 
+                    : 'bg-white border-gray-200 text-gray-400'
+                }`;
+                btn.innerText = cat.name;
+                btn.onclick = () => {
+                    cat.active = !cat.active;
+                    renderSettings();
+                };
+                container.appendChild(btn);
+            });
+        }
+
+        function saveCustom() {
+            const input = document.getElementById('custom-input').value;
+            if (input.trim()) {
+                const words = input.split(/[,，\n]/).map(w => w.trim()).filter(w => w);
+                appState.customWords = words;
+            }
+            toggleSettings();
+            generate();
+        }
+
+        window.onload = init;
     </script>
 </body>
 </html>
-
 
